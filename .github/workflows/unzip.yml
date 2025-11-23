@@ -1,0 +1,34 @@
+name: Unzip mashiro2.zip
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+jobs:
+  unzip:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Unzip mashiro2.zip
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y unzip
+          unzip -o mashiro2.zip -d .
+          rm mashiro2.zip
+
+      - name: Commit unzipped files
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add .
+          git commit -m "Unzipped mashiro2.zip" || echo "No changes to commit"
+
+      - name: Push changes
+        uses: ad-m/github-push-action@v0.8.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: main
